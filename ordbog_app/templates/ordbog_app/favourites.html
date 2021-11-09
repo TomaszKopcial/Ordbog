@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<p>Lista ulubionych:</p>
+<ul style="list-style: none;">
+    {% for word in history %}
+            <li>
+                {{ word.date_added }}, {{ word.word_pl }}, {{ word.word_en }}, {{ word.word_dk }}: <button type="submit" class="btn btn-sm">X</button>
+            </li>
+    {% endfor %}
+</ul>
+
+
+{% endblock %}
