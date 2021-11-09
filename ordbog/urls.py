@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ordbog_app.views import HomeView
+from ordbog_app.views import HomeView, register_user, login_user, logout_user
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home/', HomeView.as_view(), name="home"),
+    path('', HomeView.as_view(), name="home"),
+    path('register/', register_user, name="register"),
+    path('login/', login_user, name="login"),
+    path('logout/', logout_user, name="logout"),
 ]

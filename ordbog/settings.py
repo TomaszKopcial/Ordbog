@@ -10,6 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
+from django.contrib.messages import constants
+
+MESSAGE_TAGS = {
+        constants.DEBUG: 'alert-secondary',
+        constants.INFO: 'alert-info',
+        constants.SUCCESS: 'alert-success',
+        constants.WARNING: 'alert-warning',
+        constants.ERROR: 'alert-danger',
+ }
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,8 +47,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     'ordbog_app',
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
