@@ -4,11 +4,16 @@
 
 <p>Lista ulubionych:</p>
 <ul style="list-style: none;">
-    {% for word in history %}
-            <li>
-                {{ word.date_added }}, {{ word.word_pl }}, {{ word.word_en }}, {{ word.word_dk }}: <button type="submit" class="btn btn-sm">X</button>
-            </li>
+
+    {% for word in favourite_words %}
+    <form id="delete" action="" method="POST">
+        {% csrf_token %}
+        <input value="{{ word.date_added }}, {{ word.word_pl }}, {{ word.word_en }}, {{ word.word_dk }}"
+               size="50" disabled="disabled">
+        <input name="{{ word.id }}" type="submit" value="✕">
+    </form>
     {% endfor %}
+
 </ul>
 
 

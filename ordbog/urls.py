@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ordbog_app.views import HomeView, register_user, login_user, logout_user, search_history, favourites
+from ordbog_app.views import HomeView, register_user, login_user, logout_user, search_history, favourites, user_profile
 
 
 urlpatterns = [
@@ -26,4 +26,5 @@ urlpatterns = [
     path('logout/', logout_user, name="logout"),
     path('search_history/', search_history, name="history"),
     path('favourites/', favourites, name="favourites"),
+    path('user_profile/', user_profile, name="user"),
 ]

@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from .forms import SearchWordForm, NewUserForm
-from .models import UserProfile, SearchHistory, Favourites
+from .models import Notes, SearchHistory, Favourites
 
 from deep_translator import GoogleTranslator, PonsTranslator
 from serpapi import GoogleSearch
@@ -16,6 +16,10 @@ User = get_user_model()
 
 
 def image_search(word):
+    """
+    :param word:
+    :return: returns a link to an image based on user's input
+    """
     try:
         search = GoogleSearch(
             {"q": word, "api_key": "f95b3392006ab58721e533504f6356cf5834fabbf391f367d5f00e69669a3e72"})
@@ -26,6 +30,9 @@ def image_search(word):
 
 
 class HomeView(View):
+    """
+    homepage/search form to lookup words and get them translated
+    """
     def get(self, request, *args, **kwargs):
         my_form = SearchWordForm()
         context = {'form': my_form}
@@ -36,7 +43,10 @@ class HomeView(View):
         current_user = request.user
         context = {'form': form}
 
-        if form.is_valid():  # -> True/False
+        if form.is_valid():
+            """
+            translates user's word to english and danish
+            """
             word_value = form.cleaned_data['word']
 
             translated_word = GoogleTranslator(source='pl', target='da').translate(word_value)
@@ -56,6 +66,9 @@ class HomeView(View):
 
 
 def register_user(request):
+    """
+    uses Django's built-in user registration form to register new users
+    """
     if request.method == "POST":
         form = NewUserForm(request.POST)
         if form.is_valid():
@@ -69,6 +82,9 @@ def register_user(request):
 
 
 def login_user(request):
+    """
+    uses Django's built-in user form to log in users
+    """
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -88,34 +104,46 @@ def login_user(request):
 
 
 def logout_user(request):
+    """
+    uses Django's built-in user form to log out users
+    """
     logout(request)
     messages.info(request, "Pomyślnie wylogowano użytkownika.")
     return redirect("/")
 
 
-@login_required
-def search_history(request):
-    history = SearchHistory.objects.filter(user_id=request.user.id)
-    context = {"history": history}
-    return render(request, "ordbog_app/history.html", context)
+# @login_required
+# def search_history(request):
+#     history = SearchHistory.objects.filter(user_id=request.user.id)
+#     context = {"history": history}
+#     return render(request, "ordbog_app/history.html", context)
 
 
 @login_required
 def search_history(request):
+    """
+    fetches search history for a logged in user
+    """
     if request.method == "GET":
         history = SearchHistory.objects.filter(user_id=request.user.id)
         context = {"history": history}
         return render(request, "ordbog_app/history.html", context)
 
     if request.method == "POST":
+        """
+        adds selected words from search history to favourites 
+        """
         current_user = request.user
         word_id = request.POST.keys()
-        print([*word_id][1])
-        print(current_user)
 
-        # date_now = datetime.now()
-        # Favourites.objects.create(date_added=date_now, word_en=translated_word_en, word_pl=word_value,
-        #                              word_dk=translated_word, user_id=current_user.id)
+        text = [*word_id][1]
+        date_now = datetime.now()
+        word_en = text.split('|')[0]
+        word_pl = text.split('|')[1]
+        word_dk = text.split('|')[2]
+
+        Favourites.objects.create(date_added=date_now, word_en=word_en, word_pl=word_pl,
+                                  word_dk=word_dk, user_id=current_user.id)
 
         messages.success(request, "Dodano do ulubionych")
         return redirect("/search_history")
@@ -123,6 +151,42 @@ def search_history(request):
 
 @login_required
 def favourites(request):
-    favourite_words = Favourites.objects.filter(user_id=request.user.id)
-    context = {"favourite_words": favourite_words}
-    return render(request, "ordbog_app/favourites.html", context)
+    if request.method == "GET":
+        favourite_words = Favourites.objects.filter(user_id=request.user.id)
+        context = {"favourite_words": favourite_words}
+        return render(request, "ordbog_app/favourites.html", context)
+
+    if request.method == "POST":
+        """
+        deletes selected words from favourites 
+        """
+        word = request.POST.keys()
+        word_id = [*word][1]
+
+        Favourites.objects.filter(id=word_id).delete()
+
+        messages.info(request, "Usunięto z ulubionych")
+        return redirect("/favourites")
+
+
+@login_required
+def user_profile(request):
+    current_user = request.user
+    if request.method == "GET":
+        user_info = User.objects.filter(id=current_user.id)
+        notes = Notes.objects.filter(user_id=request.user.id)
+        context = {"user_info": user_info,
+                   "notes": notes}
+        return render(request, "ordbog_app/user_profile.html", context)
+
+    if request.method == "POST":
+        """
+        adds new notes on the user_profile page
+        """
+        notes = request.POST.keys()
+        note_test = request.POST.get('note')
+
+        Notes.objects.update_or_create(note=note_test, user_id=current_user.id)
+
+        messages.success(request, "Dodano notatkę")
+        return redirect("/user_profile")

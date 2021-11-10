@@ -1,5 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    ID: {{ user.id }}<br>
+    USERNAME: {{ user.username }}<br>
+    FIRST NAME: {{ user.first_name }}<br>
+    LAST NAME: {{ user.last_name }}<br>
+    EMAIL: {{ user.email }}<br>
+    DATE JOINED: {{ user.date_joined }}<br>
+    LAST LOGIN: {{ user.last_login }}
+    <br>
+    <br>
+    <b>Miejsce na notatki</b>
+    <form id="notes" action="" method="POST" >
+        {% csrf_token %}
+        <textarea name="note">{{ note.note }}</textarea>
+        <input name="{{ user.id }}" type="submit" value="Dodaj">
+    </form>
+    {% for note in notes %}
+        <li>{{ note.note }}</li>
+    {% endfor %}
 
 {% endblock %}

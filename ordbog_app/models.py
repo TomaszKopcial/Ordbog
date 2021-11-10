@@ -31,18 +31,18 @@ class Notes(models.Model):
     note = models.CharField(max_length=512)
 
     def __str__(self):
-        return self.user
+        return f'{self.user}'
 
 
 class SearchHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     date_searched = models.DateTimeField()
     word_en = models.CharField(max_length=256)
     word_pl = models.CharField(max_length=256)
     word_dk = models.CharField(max_length=256)
 
     def __str__(self):
-        return self.user
+        return f'{self.user}'
 
 
 class Favourites(models.Model):

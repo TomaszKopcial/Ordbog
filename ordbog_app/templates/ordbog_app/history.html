@@ -5,19 +5,14 @@
 <p>Historia wyszukiwania:</p>
 <ul style="list-style: none;">
     {% for word in history %}
-    <!--        <li>-->
-    <!--            {{ word.date_searched }}, {{ word.word_pl }}, {{ word.word_en }}, {{ word.word_dk }}: <button type="submit" class="btn btn-sm">❤</button>-->
-    <!--        </li>-->
-
     <form id="add_to_favourites" action="" method="POST">
         {% csrf_token %}
         <input value="{{ word.date_searched }}, {{ word.word_pl }}, {{ word.word_en }}, {{ word.word_dk }}"
                size="50" disabled="disabled">
-        <input name="{{ word.word_pl }}" type="submit" value="❤">
+        <input name="{{ word.word_en }}|{{ word.word_pl }}|{{ word.word_dk }}" type="submit" value="❤">
     </form>
     {% endfor %}
 </ul>
-{% csrf_token %}
 
 
 {% endblock %}
